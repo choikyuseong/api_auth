@@ -16,9 +16,18 @@ router.route('/signup')
 
 
 router.route('/signin')
-    .post(UsersController.signIn);
+    .post(validateBody(schemas.authSchema) , passport.authenticate('local' , {session:false}) , UsersController.signIn);
 
 router.route('/secret')
     .get(passport.authenticate('jwt' , {session:false}),UsersController.secret);
+
+
+router.route('/oauth/google')
+    .post(passport.authenticate('googleToken', { session: false }), UsersController.googleOAuth);
+
+router.route('/oauth/facebook')
+    .post(passport.authenticate('facebookToken', { session: false }), UsersController.facebookOAuth);
+
+
 
 module.exports = router;
