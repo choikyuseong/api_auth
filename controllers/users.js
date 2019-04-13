@@ -1,4 +1,18 @@
 const User = require('../models/user');
+const JWT = require('jsonwebtoken');
+
+const {JWT_SECRET} = require('../config');
+
+signToken = user =>{
+    return JWT.sign({
+        iss: 'Codeworkr',
+        sub: user.id,
+        iat: new Date().getTime(), //current time
+        exp: new Date().setDate(new Date().getDate()+1) //current time +1day
+    }, JWT_SECRET);
+}
+
+
 
 module.exports = {
 
@@ -7,7 +21,7 @@ module.exports = {
         //Email & password
         //req,value.body
         //console.log('UsersController.signUp() called!');
-        console.log('contents or req.value.body', req.value.body)
+        console.log('contents or req.value.body', req.value.body);
 
         const {email , password} = req.value.body;
 
@@ -21,8 +35,11 @@ module.exports = {
         const newUser = new User({ email , password});
         await newUser.save();
 
+        //Generate token
+        const token = signToken(newUser);
+
         //respond with token
-        res.status(200).json({user:'created'});
+        res.status(200).json({user:token});
 
 
     },
